@@ -145,6 +145,3 @@ if __name__ == '__main__':
     python_ta.check_all(config={'extra-imports': ['typing', 'survey']})
 
 
-
-## a change for testing.
-##change 2
