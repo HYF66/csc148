@@ -10,7 +10,7 @@ Copying for purposes other than this use is expressly prohibited.
 All forms of distribution of this code, whether as given or with
 any changes, are expressly prohibited.
 
-Authors: Misha Schwartz, Mario Badr, Christine Murad, Diane Horton, 
+Authors: Misha Schwartz, Mario Badr, Christine Murad, Diane Horton,
 Sophia Huynh and Jaisie Sin
 
 All of the files in this directory and all subdirectories are:
@@ -31,6 +31,7 @@ if TYPE_CHECKING:
 class InvalidAnswerError(Exception):
     """
     Error that should be raised when an answer is invalid for a given question.
+
     """
 
 
@@ -54,7 +55,7 @@ class Criterion:
         raise NotImplementedError
 
 
-class HomogeneousCriterion:
+class HomogeneousCriterion(Criterion):
     # TODO: make this a child class of another class defined in this file
     """
     A criterion used to evaluate the quality of a group based on the group
@@ -82,9 +83,32 @@ class HomogeneousCriterion:
         len(answers) > 0
         """
         # TODO: complete the body of this method
+        for answer in answers:
+            if not answer.is_valid():
+                raise InvalidAnswerError
+        if len(answers) == 1:
+            return 1
+        mark = []
+        for i in range(len(answers)):
+            a = answers[i]
+            for n in range(len(answers)):
+                if b != i:
+                    b = answers[n]
+                    c = b.getsimilarity(a)
+            mark.append(c)
+
+        total = 0
+        for k in mark:
+            total += k
+        aver = total / len(mark)
+        return aver
 
 
-class HeterogeneousCriterion:
+
+
+
+
+class HeterogeneousCriterion(Criterion):
     # TODO: make this a child class of another class defined in this file
     """ A criterion used to evaluate the quality of a group based on the group
     members' answers for a given question.
@@ -111,9 +135,12 @@ class HeterogeneousCriterion:
         len(answers) > 0
         """
         # TODO: complete the body of this method
+        homo = HomogeneousCriterion.score_answers(question, answers)
+        return 1 - homo
 
 
-class LonelyMemberCriterion:
+
+class LonelyMemberCriterion(Criterion):
     # TODO: make this a child class of another class defined in this file
     """ A criterion used to measure the quality of a group of students
     according to the group members' answers to a question. This criterion
@@ -139,6 +166,15 @@ class LonelyMemberCriterion:
         len(answers) > 0
         """
         # TODO: complete the body of this method
+        copy = []
+        for ansr in answers:
+            copy.append(ansr)
+
+        while not copy == []:
+            a = copy.pop(0)
+            if a not in copy:
+                return 0.0
+            return 1.0
 
 
 if __name__ == '__main__':
