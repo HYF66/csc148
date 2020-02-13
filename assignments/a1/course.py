@@ -53,6 +53,7 @@ class Student:
     === Public Attributes ===
     id: the id of the student
     name: the name of the student
+    qa: the dictionary of the set {Question: Answer}
 
     === Representation Invariants ===
     name is not the empty string
@@ -63,9 +64,9 @@ class Student:
 
     def __init__(self, id_: int, name: str) -> None:
         """ Initialize a student with name <name> and id <id>"""
-        # TODO: complete the body of this method
-        self.name = name
         self.id = id_
+        self.name = name
+        self.qa: {Question: Answer} = {}
 
     def __str__(self) -> str:
         """ Return the name of this student """
@@ -78,13 +79,16 @@ class Student:
         id as <question> and that answer is a valid answer for <question>.
         """
         # TODO: complete the body of this method
-
+        if question in self.qa:
+            return True
+        return False
 
     def set_answer(self, question: Question, answer: Answer) -> None:
         """
         Record this student's answer <answer> to the question <question>.
         """
         # TODO: complete the body of this method
+        self.qa[question] = answer
 
     def get_answer(self, question: Question) -> Optional[Answer]:
         """
@@ -92,7 +96,9 @@ class Student:
         this student does not have an answer to <question>
         """
         # TODO: complete the body of this method
-
+        if question in self.qa:
+            return self.qa[question]
+        return None
 
 class Course:
     """
@@ -114,8 +120,11 @@ class Course:
         """
         Initialize a course with the name of <name>.
         """
-        # TODO: complete the body of th
+        #TODO:
         self.name = name
+        self.roster = []
+        self.students = []
+
 
     def enroll_students(self, students: List[Student]) -> None:
         """
@@ -125,14 +134,25 @@ class Course:
         do not add any of the students in <students> to the course.
         """
         # TODO: complete the body of this method
+        for student in students:
+            if student.id not in self.roster and student.name is not '':
+                self.roster.append(self, students)
+            else:
+                continue
 
 
-    def all_answered(self, survey: Survey) -> bool:
+
+
+
+    def all_answered(self, survey: Survey) -> bool: #NOT DONE
         """
         Return True iff all the students enrolled in this course have a valid
         answer for every question in <survey>.
         """
+        for student in self.roster:
+            if
         # TODO: complete the body of this method
+
 
     def get_students(self) -> Tuple[Student, ...]:
         """
@@ -144,6 +164,8 @@ class Course:
         Hint: the sort_students function might be useful
         """
         # TODO: complete the body of this method
+        return tuple(sort_students(self.roster, 'id'))
+
 
 
 if __name__ == '__main__':
