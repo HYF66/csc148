@@ -64,10 +64,13 @@ class Student:
     def __init__(self, id_: int, name: str) -> None:
         """ Initialize a student with name <name> and id <id>"""
         # TODO: complete the body of this method
+        self.name = name
+        self.id = id_
 
     def __str__(self) -> str:
         """ Return the name of this student """
         # TODO: complete the body of this method
+        return self.name
 
     def has_answer(self, question: Question) -> bool:
         """
@@ -75,6 +78,7 @@ class Student:
         id as <question> and that answer is a valid answer for <question>.
         """
         # TODO: complete the body of this method
+
 
     def set_answer(self, question: Question, answer: Answer) -> None:
         """
@@ -110,7 +114,8 @@ class Course:
         """
         Initialize a course with the name of <name>.
         """
-        # TODO: complete the body of this method
+        # TODO: complete the body of th
+        self.name = name
 
     def enroll_students(self, students: List[Student]) -> None:
         """
@@ -120,6 +125,7 @@ class Course:
         do not add any of the students in <students> to the course.
         """
         # TODO: complete the body of this method
+
 
     def all_answered(self, survey: Survey) -> bool:
         """
