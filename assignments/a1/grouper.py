@@ -215,7 +215,62 @@ class GreedyGrouper(Grouper):
         required to make sure all students in <course> are members of a group.
         """
         # TODO: complete the body of this method
-        roster = course.get_students()
+
+        nameD = course.get_students()
+        scoresD = survey.score_students(nameD)
+
+        grouping = []
+        new_group = []
+
+        while scoresD != []:
+            new_group.append(nameD[0])
+            if scoresD[0] == max(scoresD):
+                nameD.remove(nameD[0])
+                scoresD.remove(scoresD[0])
+                while len(new_group) < self.group_size and nameD != []:
+                    #find the second max score after nameD[0]
+                    second_max_index = scoresD.index(max(scoresD))
+                    new_group.append(nameD[second_max_index])
+                    nameD.pop(second_max_index)
+                    scoresD.pop(second_max_index)
+                grouping.append(new_group)
+                new_group = []
+
+            elif scoresD[0] == min(scoresD):
+                nameD.remove(nameD[0])
+                scoresD.remove(scoresD[0])
+                while len(new_group) < self.group_size and nameD !=[]:
+                    #find the second max score after nameD[0]
+                    max_index = scoresD.index(max(scoresD))
+                    new_group.append(nameD[max_index])
+                    nameD.pop(max_index)
+                    scoresD.pop(max_index)
+                grouping.append(new_group)
+                new_group = []
+                
+            else:
+                nameD.remove(nameD[0])
+                scoresD.remove(scoresD[0])
+                while len(new_group) < self.group_size and nameD !=[]:
+                    if scoresD[0] != max(scoresD):
+                        max_index = scoresD.index(max(scoresD))
+                        new_group.append(nameD[max_index])
+                        nameD.pop(max_index)
+                        scoresD.pop(max_index)
+                    elif scoresD[0] == max(scoresD):
+                        scoresD[0].pop(0)
+                        nameD[0].pop(0)
+                        max_index = scoresD.index(max(scoresD))
+                        new_group.append(nameD[max_index])
+                        nameD.pop(max_index)
+                        scoresD.pop(max_index)
+                grouping.append(new_group)
+                new_group = []
+
+
+        return grouping
+
+
 
 
 
