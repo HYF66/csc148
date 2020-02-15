@@ -50,6 +50,9 @@ def slice_list(lst: List[Any], n: int) -> List[List[Any]]:
     True
     """
     # TODO: complete the body of this function
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
 
 
 def windows(lst: List[Any], n: int) -> List[List[Any]]:
@@ -67,6 +70,10 @@ def windows(lst: List[Any], n: int) -> List[List[Any]]:
     True
     """
     # TODO: complete the body of this function
+    for i in range(0, len(lst)):
+        yield lst[i:i+n]
+
+
 
 
 class Grouper:
@@ -262,10 +269,13 @@ class Group:
     def __init__(self, members: List[Student]) -> None:
         """ Initialize a group with members <members> """
         # TODO: complete the body of this method
+        self._members = members
+
 
     def __len__(self) -> int:
         """ Return the number of members in this group """
         # TODO: complete the body of this method
+        return len(self._members)
 
     def __contains__(self, member: Student) -> bool:
         """
@@ -273,6 +283,9 @@ class Group:
         as <member>.
         """
         # TODO: complete the body of this method
+        if member.id in self._members:
+            return True
+        return False
 
     def __str__(self) -> str:
         """
@@ -282,6 +295,8 @@ class Group:
         You can choose the precise format of this string.
         """
         # TODO: complete the body of this method
+        for person in self._members:
+            print(person, end=" ")
 
     def get_members(self) -> List[Student]:
         """ Return a list of members in this group. This list should be a
@@ -332,8 +347,8 @@ class Grouping:
         # TODO: complete the body of this method
 
     def get_groups(self) -> List[Group]:
-        """ Return a list of all groups in this grouping. 
-        This list should be a shallow copy of the self._groups 
+        """ Return a list of all groups in this grouping.
+        This list should be a shallow copy of the self._groups
         attribute.
         """
         # TODO: complete the body of this method

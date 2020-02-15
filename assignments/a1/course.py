@@ -150,7 +150,7 @@ class Course:
         answer for every question in <survey>.
         """
         for student in self.roster:
-            if
+            pass
         # TODO: complete the body of this method
 
 

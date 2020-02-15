@@ -311,7 +311,7 @@ class CheckboxQuestion(Question):
     id: int
     text: str
     option: List[str]
-    description: List[str]
+    description: {str: str}
 
     def __init__(self, id_: int, text: str, options: List[str]) -> None:
         """
@@ -361,7 +361,12 @@ class CheckboxQuestion(Question):
         #     for item in answer:
         #         if item in self.description:
 
-
+        if isinstance(answer, str):
+            for qanswers in self.description:
+                if answer == qanswers:
+                    return True
+        else:
+            return False
 
 
     def get_similarity(self, answer1: Answer, answer2: Answer) -> float:
@@ -382,6 +387,16 @@ class CheckboxQuestion(Question):
         <answer1> and <answer2> are both valid answers to this question
         """
         # TODO: complete the body of this method
+        common = []
+        unique = []
+        for a1 in answer1.content:
+            if a1 not in answer2.content:
+                unique.append(a1)
+            elif a1 in answer2.content:
+                common.append(a1)
+
+
+
 
 
 
@@ -443,6 +458,11 @@ class Survey:
         and should use 1 as a default weight.
         """
         # TODO: complete the body of this method
+        self._questions = {questions}
+        self._weights = {}
+        self._criteria = {1, HomogeneousCriterion.score_answers(questions, )}
+
+
 
 
     def __len__(self) -> int:
