@@ -311,7 +311,7 @@ class CheckboxQuestion(Question):
     id: int
     text: str
     option: List[str]
-    description: {str: str}
+    description: List[str]
 
     def __init__(self, id_: int, text: str, options: List[str]) -> None:
         """
@@ -347,26 +347,44 @@ class CheckboxQuestion(Question):
         unique possible answers to this question.
         """
         # TODO: complete the body of this method
-        # if type(answer) is str:
-        #     if answer in self.description:
-        #         return True
-        #     else: return False
-        # elif type(answer) is List[str]:
-        #     for item in answer:
-        #         if item not in self.description:
-        #             return False
-        #     return True
-
-        # if type(answer) is type([str]) and answer != []:
-        #     for item in answer:
-        #         if item in self.description:
-
-        if isinstance(answer, str):
-            for qanswers in self.description:
-                if answer == qanswers:
-                    return True
+        ans_in = False
+        if type(answer) is str:
+            if answer in self.description:
+                ans_in = True
+            # else:
+            #     ans_in = False
+            #     return ans_in
+        elif type(answer) is List[str]:
+            for item in answer:
+                if item not in self.description:
+                    ans_in = False
         else:
             return False
+
+        no_duplicate = True
+        copy = []
+        if not isinstance(answer,str):
+            no_duplicate = False
+        else:
+            i = len(copy)
+            for ans in answer:
+                copy.append(ans)
+            while i > 0:
+                sample = copy.pop(0)
+                if sample in copy:
+                    no_duplicate = False
+                i -= 1
+
+        if no_duplicate and ans_in:
+            return True
+        else:
+            return False
+        
+
+
+
+
+
 
 
     def get_similarity(self, answer1: Answer, answer2: Answer) -> float:
@@ -387,16 +405,6 @@ class CheckboxQuestion(Question):
         <answer1> and <answer2> are both valid answers to this question
         """
         # TODO: complete the body of this method
-        common = []
-        unique = []
-        for a1 in answer1.content:
-            if a1 not in answer2.content:
-                unique.append(a1)
-            elif a1 in answer2.content:
-                common.append(a1)
-
-
-
 
 
 
@@ -458,16 +466,29 @@ class Survey:
         and should use 1 as a default weight.
         """
         # TODO: complete the body of this method
-        self._questions = {questions}
-        self._weights = {}
-        self._criteria = {1, HomogeneousCriterion.score_answers(questions, )}
+        self._default_criterion = HomogeneousCriterion
+        self._default_weight = 1
+        self._questions = dict()
+        for question in questions:
+            self._questions[question.id] = question
 
+        #Since initially, we don't have a criteria to a particular question,
+        #this dict should be set to empty
+        self._criteria = dict()
+        # for question_cri in questions:
+        #     self._criteria[question_cri.id] = self._default_criterion
 
+        #Since initially, we don't have a weight to a particular question,
+        #this dict should be set to empty
+        self._weights = dict()
+        # for question_wei in questions:
+        #     self._weights[question_wei.id] = self._default_weight
 
 
     def __len__(self) -> int:
         """ Return the number of questions in this survey """
         # TODO: complete the body of this method
+        return len(self._questions)
 
     def __contains__(self, question: Question) -> bool:
         """
@@ -475,6 +496,10 @@ class Survey:
         id as <question>.
         """
         # TODO: complete the body of this method
+        if question.id in self._questions:
+            return True
+        else:
+            return False
 
     def __str__(self) -> str:
         """
@@ -484,10 +509,20 @@ class Survey:
         You can choose the precise format of this string.
         """
         # TODO: complete the body of this method
+        description_dict = {}
+        for ques in self._questions:
+            description_dict[ques] = self._questions[ques].text
+        return str(description_dict)
+
 
     def get_questions(self) -> List[Question]:
         """ Return a list of all questions in this survey """
         # TODO: complete the body of this method
+        lis = []
+        for ques in self._questions:
+            lis.append(self._questions[ques])
+        return lis
+
 
     def _get_criterion(self, question: Question) -> Criterion:
         """
@@ -500,6 +535,10 @@ class Survey:
         <question>.id occurs in this survey
         """
         # TODO: complete the body of this method
+        if question.id in self._criteria:
+            return self._criteria[question.id]
+        else:
+            return self._default_criterion
 
     def _get_weight(self, question: Question) -> int:
         """
@@ -512,6 +551,10 @@ class Survey:
         <question>.id occurs in this survey
         """
         # TODO: complete the body of this method
+        if question.id in self._weights:
+            return self._weights[question.id]
+        else:
+            return self._default_weight
 
     def set_weight(self, weight: int, question: Question) -> bool:
         """
@@ -521,6 +564,11 @@ class Survey:
         and return False instead.
         """
         # TODO: complete the body of this method
+        if question.id in self._questions:
+            self._weights[question.id] = weight
+            return True
+        else:
+            return False
 
     def set_criterion(self, criterion: Criterion, question: Question) -> bool:
         """
@@ -531,6 +579,11 @@ class Survey:
         and return False instead.
         """
         # TODO: complete the body of this method
+        if question.id in self._questions:
+            self._criteria[question.id] = criterion
+            return True
+        else:
+            return False
 
     def score_students(self, students: List[Student]) -> float:
         """
@@ -554,6 +607,19 @@ class Survey:
             survey
         """
         # TODO: complete the body of this method
+        total_score = 0
+        for stu in students:
+            ##this is the question-answer dictionary
+            qadict = stu.qa
+            for q in self._questions:
+                criteria = self._criteria[q]
+                score = criteria.score_answers(self._questions[q], \
+                                       qadict[self._questions[q]])
+                weighted_score = score*self._weights[q]
+                total_score += weighted_score
+        aver = total_score / len(students)
+        return aver
+
 
     def score_grouping(self, grouping: Grouping) -> float:
         """ Return a score for <grouping> calculated based on the answers of
@@ -572,6 +638,17 @@ class Survey:
             in this survey
         """
         # TODO: complete the body of this method
+        if not grouping:
+            return 0.0
+        else:
+            total_score = 0
+            for group in grouping:
+                score_of_group = self.score_students(group)
+                total_score += score_of_group
+            return total_score / len(grouping)
+
+
+
 
 
 if __name__ == '__main__':
