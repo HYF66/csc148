@@ -70,7 +70,7 @@ def windows(lst: List[Any], n: int) -> List[List[Any]]:
     True
     """
     # TODO: complete the body of this function
-    for i in range(0, len(lst)):
+    for i in range(0, len(lst)-1):
         yield lst[i:i+n]
 
 
@@ -98,6 +98,7 @@ class Grouper:
         group_size > 1
         """
         # TODO: complete the body of this method
+        self.group_size = group_size
 
     def make_grouping(self, course: Course, survey: Survey) -> Grouping:
         """ Return a grouping for all students in <course> using the questions
@@ -136,6 +137,11 @@ class AlphaGrouper(Grouper):
         Hint: the sort_students function might be useful
         """
         # TODO: complete the body of this method
+        roster = course.get_students()
+        roster_alpha = sort_students(roster, 'name')
+        grouped = slice_list(roster_alpha, self.group_size)
+        return grouped
+
 
 
 class RandomGrouper(Grouper):
@@ -164,6 +170,9 @@ class RandomGrouper(Grouper):
         members of a group.
         """
         # TODO: complete the body of this method
+        roster = course.get_students()
+        roster_random = random.shuffle(roster)
+        return roster_random
 
 
 class GreedyGrouper(Grouper):
@@ -206,6 +215,8 @@ class GreedyGrouper(Grouper):
         required to make sure all students in <course> are members of a group.
         """
         # TODO: complete the body of this method
+        roster = course.get_students()
+
 
 
 class WindowGrouper(Grouper):
@@ -303,7 +314,10 @@ class Group:
         shallow copy of the self._members attribute.
         """
         # TODO: complete the body of this method
-
+        shallow = []
+        for person in self._members:
+            shallow.append(person)
+        return shallow
 
 class Grouping:
     """
@@ -322,10 +336,12 @@ class Grouping:
     def __init__(self) -> None:
         """ Initialize a Grouping that contains zero groups """
         # TODO: complete the body of this method
+        self._groups = []
 
     def __len__(self) -> int:
         """ Return the number of groups in this grouping """
         # TODO: complete the body of this method
+        return len(self._groups)
 
     def __str__(self) -> str:
         """
@@ -336,6 +352,10 @@ class Grouping:
         You can choose the precise format of this string.
         """
         # TODO: complete the body of this method
+        for group in self._groups:
+            for member in group:
+                print(member)
+
 
     def add_group(self, group: Group) -> bool:
         """
@@ -345,6 +365,16 @@ class Grouping:
         invariant don't add it and return False instead.
         """
         # TODO: complete the body of this method
+        if group == []:
+            return False
+        temp = []
+        for student in self._members:
+            if student not in temp:
+                temp.append(student)
+            else:
+                return False
+
+
 
     def get_groups(self) -> List[Group]:
         """ Return a list of all groups in this grouping.
@@ -352,7 +382,10 @@ class Grouping:
         attribute.
         """
         # TODO: complete the body of this method
-
+        shallow = []
+        for group in self._groups:
+            shallow.append(group)
+        return shallow
 
 if __name__ == '__main__':
     import python_ta
