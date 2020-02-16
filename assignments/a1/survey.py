@@ -25,6 +25,7 @@ described different types of questions that can be asked in a given survey.
 from __future__ import annotations
 from typing import TYPE_CHECKING, Union, Dict, List
 from criterion import HomogeneousCriterion, InvalidAnswerError
+
 if TYPE_CHECKING:
     from criterion import Criterion
     from grouper import Grouping
@@ -45,15 +46,15 @@ class Question:
 
     id: int
     text: str
-    description: any
 
-
+    # description: any()
 
     def __init__(self, id_: int, text: str) -> None:
         """ Initialize a question with the text <text> """
         # TODO: complete the body of this method
         self.text = text
         self.id = id_
+        # self.description = description
 
     def __str__(self) -> str:
         """
@@ -96,9 +97,8 @@ class MultipleChoiceQuestion(Question):
     id: int
     text: str
     options: List[str]
-    descriptions: [str]
 
-    def __init__(self, id_: int, text: str, options: List[str], description: str) -> None:
+    def __init__(self, id_: int, text: str, options: List[str]) -> None:
         """
         Initialize a question with the text <text> and id <id> and
         possible answers <options>.
@@ -110,7 +110,6 @@ class MultipleChoiceQuestion(Question):
         self.id = id_
         self.text = text
         self.options = options
-        self.descriptions = description
 
     def __str__(self) -> str:
         """
@@ -120,8 +119,7 @@ class MultipleChoiceQuestion(Question):
         You can choose the precise format of this string.
         """
         # TODO: complete the body of this method
-        return self.text + self.descriptions
-
+        return self.text + str(self.options)
 
     def validate_answer(self, answer: Answer) -> bool:
         """
@@ -131,7 +129,7 @@ class MultipleChoiceQuestion(Question):
         question.
         """
         # TODO: complete the body of this method
-        if answer in self.descriptions:
+        if answer in self.options:
             return True
         else:
             return False
@@ -150,6 +148,7 @@ class MultipleChoiceQuestion(Question):
         else:
             return 0.0
 
+
 class NumericQuestion(Question):
     # TODO: make this a child class of another class defined in this file
     """ A question whose answer can be an integer between some
@@ -165,11 +164,10 @@ class NumericQuestion(Question):
 
     id: int
     text: str
-    min:int
+    min: int
     max: int
-    description: str
 
-    def __init__(self, id_: int, text: str, min_: int, max_: int, description: str) -> None:
+    def __init__(self, id_: int, text: str, min_: int, max_: int) -> None:
         """
         Initialize a question with id <id_> and text <text> whose possible
         answers can be any integer between <min_> and <max_> (inclusive)
@@ -182,7 +180,6 @@ class NumericQuestion(Question):
         self.text = text
         self.min = min_
         self.max = max_
-        self.description = description
 
     def __str__(self) -> str:
         """
@@ -192,7 +189,7 @@ class NumericQuestion(Question):
         You can choose the precise format of this string.
         """
         # TODO: complete the body of this method
-        return self.text + self.description
+        return self.text + str(range(self.min, self.max))
 
     def validate_answer(self, answer: Answer) -> bool:
         """
@@ -200,11 +197,12 @@ class NumericQuestion(Question):
         minimum and maximum (inclusive) possible answers to this question.
         """
         # TODO: complete the body of this method
+        if not isinstance(answer, int):
+            return False
         if self.min <= answer <= self.max:
             return True
         else:
             return False
-
 
     def get_similarity(self, answer1: Answer, answer2: Answer) -> float:
         """
@@ -233,7 +231,7 @@ class NumericQuestion(Question):
         # TODO: complete the body of this method
         a = abs(answer1 - answer2)
         b = a / self.max - self.min
-        return 1-b
+        return 1 - b
 
 
 class YesNoQuestion(Question):
@@ -251,16 +249,14 @@ class YesNoQuestion(Question):
     """
     id: int
     text: str
-    description: str
 
-    def __init__(self, id_: int, text: str, description: str) -> None:
+    def __init__(self, id_: int, text: str) -> None:
         """
         Initialize a question with the text <text> and id <id>.
         """
         # TODO: complete the body of this method
         self.id = id_
         self.text = text
-        self.description = description
 
     def __str__(self) -> str:
         """
@@ -270,7 +266,7 @@ class YesNoQuestion(Question):
         You can choose the precise format of this string.
         """
         # TODO: complete the body of this method
-        return self.text + self.description
+        return self.text + "True or False"
 
     def validate_answer(self, answer: Answer) -> bool:
         """
@@ -281,6 +277,7 @@ class YesNoQuestion(Question):
             return True
         else:
             return False
+
     def get_similarity(self, answer1: Answer, answer2: Answer) -> float:
         """
         Return 1.0 iff <answer1>.content is equal to <answer2>.content and
@@ -312,7 +309,6 @@ class CheckboxQuestion(Question):
     id: int
     text: str
     option: List[str]
-    description: List[str]
 
     def __init__(self, id_: int, text: str, options: List[str]) -> None:
         """
@@ -328,7 +324,6 @@ class CheckboxQuestion(Question):
         self.id = id_
         self.text = text
         self.option = options
-        self.description = options
 
     def __str__(self) -> str:
         """
@@ -338,7 +333,7 @@ class CheckboxQuestion(Question):
         You can choose the precise format of this string.
         """
         # TODO: complete the body of this method
-        return f'The possible answers to this question {self.text} is {self.description}. '
+        return f'The possible answers to this question {self.text} is {self.option}. '
 
     def validate_answer(self, answer: Answer) -> bool:
         """
@@ -348,45 +343,41 @@ class CheckboxQuestion(Question):
         unique possible answers to this question.
         """
         # TODO: complete the body of this method
-        ans_in = False
-        if type(answer) is str:
-            if answer in self.description:
-                ans_in = True
-            # else:
-            #     ans_in = False
-            #     return ans_in
-        elif type(answer) is List[str]:
-            for item in answer:
-                if item not in self.description:
-                    ans_in = False
-        else:
+        # ans_in = True
+        # if type(answer) is str:
+        #     if answer in self.option:
+        #         ans_in = True
+        #     # else:
+        #     #     ans_in = False
+        #     #     return ans_in
+        if answer == []:
             return False
+        for item in answer.content:
+            if item not in self.option:
+                return False
+
 
         no_duplicate = True
         copy = []
-        if not isinstance(answer,str):
-            no_duplicate = False
-        else:
-            i = len(copy)
-            for ans in answer:
+        # if isinstance(answer.content, str):
+        #     no_duplicate = True
+        # else:
+        # i = len(copy)
+        # for ans in answer.content:
+        #     copy.append(ans)
+
+        for ans in answer.content:
+            if ans not in copy:
                 copy.append(ans)
-            while i > 0:
-                sample = copy.pop(0)
-                if sample in copy:
-                    no_duplicate = False
-                i -= 1
+            else:
+                return False
+            # while i > 0:
+            #     sample = copy.pop(0)
+            #     if sample in copy:
+            #         no_duplicate = False
+            #     i -= 1
 
-        if no_duplicate and ans_in:
-            return True
-        else:
-            return False
-
-
-
-
-
-
-
+        return True
 
     def get_similarity(self, answer1: Answer, answer2: Answer) -> float:
         """
@@ -406,7 +397,6 @@ class CheckboxQuestion(Question):
         <answer1> and <answer2> are both valid answers to this question
         """
         # TODO: complete the body of this method
-
 
 
 class Answer:
@@ -473,18 +463,17 @@ class Survey:
         for question in questions:
             self._questions[question.id] = question
 
-        #Since initially, we don't have a criteria to a particular question,
-        #this dict should be set to empty
+        # Since initially, we don't have a criteria to a particular question,
+        # this dict should be set to empty
         self._criteria = dict()
         # for question_cri in questions:
         #     self._criteria[question_cri.id] = self._default_criterion
 
-        #Since initially, we don't have a weight to a particular question,
-        #this dict should be set to empty
+        # Since initially, we don't have a weight to a particular question,
+        # this dict should be set to empty
         self._weights = dict()
         # for question_wei in questions:
         #     self._weights[question_wei.id] = self._default_weight
-
 
     def __len__(self) -> int:
         """ Return the number of questions in this survey """
@@ -515,7 +504,6 @@ class Survey:
             description_dict[ques] = self._questions[ques].text
         return str(description_dict)
 
-
     def get_questions(self) -> List[Question]:
         """ Return a list of all questions in this survey """
         # TODO: complete the body of this method
@@ -523,7 +511,6 @@ class Survey:
         for ques in self._questions:
             lis.append(self._questions[ques])
         return lis
-
 
     def _get_criterion(self, question: Question) -> Criterion:
         """
@@ -615,12 +602,11 @@ class Survey:
             for q in self._questions:
                 criteria = self._criteria[q]
                 score = criteria.score_answers(self._questions[q], \
-                                       qadict[self._questions[q]])
-                weighted_score = score*self._weights[q]
+                                               qadict[self._questions[q]])
+                weighted_score = score * self._weights[q]
                 total_score += weighted_score
         aver = total_score / len(students)
         return aver
-
 
     def score_grouping(self, grouping: Grouping) -> float:
         """ Return a score for <grouping> calculated based on the answers of
@@ -649,11 +635,9 @@ class Survey:
             return total_score / len(grouping)
 
 
-
-
-
 if __name__ == '__main__':
     import python_ta
+
     python_ta.check_all(config={'extra-imports': ['typing',
                                                   'criterion',
                                                   'course',

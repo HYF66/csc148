@@ -123,7 +123,6 @@ class Course:
         """
         #TODO:
         self.name = name
-        self.roster = []
         self.students = []
 
 
@@ -135,13 +134,19 @@ class Course:
         do not add any of the students in <students> to the course.
         """
         # TODO: complete the body of this method
+        roster = []
         for student in students:
-            if student.id not in self.roster and student.name != '':
-                self.roster.append(self, students)
+            if student.name == '':
+                return None
+        for student in students:
+            if student.id in roster:
+                return None
             else:
-                continue
+                roster.append(student.id)
 
-
+        for student in students:
+            self.students.append(student)
+        return None
 
 
 
@@ -150,9 +155,12 @@ class Course:
         Return True iff all the students enrolled in this course have a valid
         answer for every question in <survey>.
         """
-        for student in self.roster:
-            for question in survey:
-                if not question.validate_answer(student.get_answer(question)):
+        for student in self.students:
+            q = survey.get_questions()
+            for question in q:
+                this_students_ans = student.get_answer(question)
+                valid = question.validate_answer(this_students_ans.content)
+                if not valid:
                     return False
         return True
 
@@ -171,7 +179,7 @@ class Course:
         Hint: the sort_students function might be useful
         """
         # TODO: complete the body of this method
-        return tuple(sort_students(self.roster, 'id'))
+        return tuple(sort_students(self.students, 'id'))
 
 
 

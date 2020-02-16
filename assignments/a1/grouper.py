@@ -73,7 +73,7 @@ def windows(lst: List[Any], n: int) -> List[List[Any]]:
     """
     # TODO: complete the body of this function
     new = []
-    for i in range(0, len(lst)-1, n-1):
+    for i in range(0, len(lst)-n+1):
         new.append(lst[i:i+n])
     return new
 
@@ -388,8 +388,10 @@ class Group:
         as <member>.
         """
         # TODO: complete the body of this method
-        if member.id in self._members:
-            return True
+
+        for student in self._members:
+            if student.id == member.id:
+                return True
         return False
 
     def __str__(self) -> str:
@@ -400,8 +402,10 @@ class Group:
         You can choose the precise format of this string.
         """
         # TODO: complete the body of this method
+        name_list = []
         for person in self._members:
-            print(person, end=" ")
+            name_list.append(person.name)
+        return str(name_list)
 
     def get_members(self) -> List[Student]:
         """ Return a list of members in this group. This list should be a
@@ -461,12 +465,17 @@ class Grouping:
         # TODO: complete the body of this method
         if group == []:
             return False
-        temp = []
-        for student in self._members:
-            if student not in temp:
-                temp.append(student)
-            else:
+        student_list = []
+        for group in self._groups:
+            for student in group.get_members():
+                student_list.append(student)
+        for student in group.get_members():
+            if student in student_list:
                 return False
+        self._groups.append(group)
+        return True
+
+
 
 
 
