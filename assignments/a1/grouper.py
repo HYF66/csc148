@@ -247,7 +247,7 @@ class GreedyGrouper(Grouper):
                     scoresD.pop(max_index)
                 grouping.append(new_group)
                 new_group = []
-                
+
             else:
                 nameD.remove(nameD[0])
                 scoresD.remove(scoresD[0])
@@ -266,7 +266,6 @@ class GreedyGrouper(Grouper):
                         scoresD.pop(max_index)
                 grouping.append(new_group)
                 new_group = []
-
 
         return grouping
 
@@ -288,7 +287,6 @@ class WindowGrouper(Grouper):
     """
 
     group_size: int
-
     def make_grouping(self, course: Course, survey: Survey) -> Grouping:
         """
         Return a grouping for all students in <course>.
@@ -317,6 +315,14 @@ class WindowGrouper(Grouper):
         new group.
         """
         # TODO: complete the body of this method
+        window = windows(course.get_students(), self.group_size)
+        score = survey.score_students(window)
+        grouping = []
+        new_group = []
+
+        for i in range (len(score)):
+
+
 
 
 class Group:
