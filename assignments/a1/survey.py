@@ -289,7 +289,7 @@ class YesNoQuestion(Question):
         <answer1> and <answer2> are both valid answers to this question
         """
         # TODO: complete the body of this method
-        if self.validate_answer(answer1) and self.validate_answer(answer2)
+        if self.validate_answer(answer1) and self.validate_answer(answer2):
             if answer2 == answer1:
                 return 1.0
             else:
@@ -379,7 +379,7 @@ class CheckboxQuestion(Question):
             return True
         else:
             return False
-        
+
 
 
 

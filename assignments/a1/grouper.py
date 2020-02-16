@@ -50,8 +50,10 @@ def slice_list(lst: List[Any], n: int) -> List[List[Any]]:
     True
     """
     # TODO: complete the body of this function
+    sliced = []
     for i in range(0, len(lst), n):
-        yield lst[i:i + n]
+        sliced.append(lst[i:i + n])
+    return sliced
 
 
 
@@ -70,8 +72,10 @@ def windows(lst: List[Any], n: int) -> List[List[Any]]:
     True
     """
     # TODO: complete the body of this function
-    for i in range(0, len(lst)-1):
-        yield lst[i:i+n]
+    new = []
+    for i in range(0, len(lst)-1, n-1):
+        new.append(lst[i:i+n])
+    return new
 
 
 
@@ -315,12 +319,41 @@ class WindowGrouper(Grouper):
         new group.
         """
         # TODO: complete the body of this method
-        window = windows(course.get_students(), self.group_size)
-        score = survey.score_students(window)
-        grouping = []
-        new_group = []
+        # window = windows(course.get_students(), self.group_size)
+        # score = survey.score_students(window)
+        # grouping = []
+        # new_group = []
 
-        for i in range (len(score)):
+        stu_copy = []
+        final_grouping: Grouping
+        student_tuple = course.get_students()
+        only_group: Group
+        for student in student_tuple:
+            stu_copy.append(student)
+
+        if len(stu_copy) < self.group_size:
+            for student in student_tuple:
+                only_group.members.append(student)
+                final_grouping.groups.append(only_group)
+            return final_grouping
+        else:
+            lis_windows = windows(stu_copy, self.group_size)
+            i = 0
+            b: Group
+            b.members = None
+            while i < len(lis_windows) - 1:
+                a: Group
+                a.members = None
+                if lis_windows[i] < lis_windows[i + 1]:
+                    i += 1
+                    pass
+                else:
+                    a.members = lis_windows[i]
+                    final_grouping.groups.append(a)
+                    lis_windows.pop(i)
+                    i -= 1
+            b.members = lis_windows[0]
+            final_grouping.groups.append(b)
 
 
 

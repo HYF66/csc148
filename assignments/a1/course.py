@@ -135,7 +135,7 @@ class Course:
         """
         # TODO: complete the body of this method
         for student in students:
-            if student.id not in self.roster and student.name is not '':
+            if student.id not in self.roster and student.name != '':
                 self.roster.append(self, students)
             else:
                 continue
@@ -150,8 +150,14 @@ class Course:
         answer for every question in <survey>.
         """
         for student in self.roster:
-            pass
+            for question in survey:
+                if not question.validate_answer(student.get_answer(question)):
+                    return False
+        return True
+
+
         # TODO: complete the body of this method
+
 
 
     def get_students(self) -> Tuple[Student, ...]:
