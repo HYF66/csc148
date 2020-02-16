@@ -61,6 +61,7 @@ class Student:
 
     id: int
     name: str
+    qa = dict
 
     def __init__(self, id_: int, name: str) -> None:
         """ Initialize a student with name <name> and id <id>"""

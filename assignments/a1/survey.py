@@ -45,6 +45,7 @@ class Question:
 
     id: int
     text: str
+    description: any
 
 
 
@@ -252,7 +253,7 @@ class YesNoQuestion(Question):
     text: str
     description: str
 
-    def __init__(self, id_: int, text: str, description:str) -> None:
+    def __init__(self, id_: int, text: str, description: str) -> None:
         """
         Initialize a question with the text <text> and id <id>.
         """
